@@ -1,0 +1,230 @@
+commit 49fc1946974dc6940a466133fb2467a75641bcf6
+Author: Tongjiangyong <tongjiangyong@agora.io>
+Date:   Sat Sep 18 11:46:26 2021 +0800
+
+    temp
+
+diff --git a/demo/Android/app/build.gradle b/demo/Android/app/build.gradle
+index bd4b8aa..18c1170 100644
+--- a/demo/Android/app/build.gradle
++++ b/demo/Android/app/build.gradle
+@@ -37,8 +37,8 @@ repositories {
+ }
+ 
+ dependencies {
+-    //implementation project(':proj_android')
+-    implementation(name: 'fpa_service_release', ext: 'aar')
++    implementation project(':proj_android')
++    //implementation(name: 'fpa_service_release', ext: 'aar')
+     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
+     //implementation(name: 'interceptor_okhttp3-0.9.88', ext: 'aar')
+     implementation 'androidx.appcompat:appcompat:1.1.0'
+diff --git a/demo/Android/app/src/main/java/io/agora/example/fpaDemo/MainActivity.java b/demo/Android/app/src/main/java/io/agora/example/fpaDemo/MainActivity.java
+index 771529b..e679f47 100644
+--- a/demo/Android/app/src/main/java/io/agora/example/fpaDemo/MainActivity.java
++++ b/demo/Android/app/src/main/java/io/agora/example/fpaDemo/MainActivity.java
+@@ -14,9 +14,11 @@ import android.widget.Spinner;
+ import android.widget.TextView;
+ 
+ import java.net.HttpURLConnection;
++import java.net.InetAddress;
+ import java.net.InetSocketAddress;
+ import java.net.Proxy;
+ import java.net.URL;
++import java.net.UnknownHostException;
+ import java.util.HashMap;
+ import java.util.Map;
+ 
+@@ -28,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
+     private TextView tvInfo;
+     int mode;
+     String upload_http_url = "http://148.153.93.30:30103/upload";
+-    String download_http_url2 = "http://148.153.93.30:30103/1KB.txt";
+-    String download_http_url = "http://148.153.93.30:30103/5MB.txt";
++    String download_http_url = "http://148.153.93.30:30103/1KB.txt";
++    String download_http_url2 = "http://148.153.93.30:30103/5MB.txt";
+     String upload_https_url = "https://frank-web-demo.rtns.sd-rtn.com:30113/upload";
+     String download_https_url = "https://frank-web-demo.rtns.sd-rtn.com:30113/5MB.txt";
+     private FpaHttpService fpaOkhttpPlugIn;
+@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
+         Map<String ,Integer> chainIdTable = new HashMap<>();
+         chainIdTable.put("www.qq.com",259);
+         chainIdTable.put("frank-web-demo.rtns.sd-rtn.com:30113",254);
+-        chainIdTable.put("148.153.93.30:30103",204);
++        chainIdTable.put("148.153.93.31:30103",204);
+         config.setChainIdTable(chainIdTable);
+         //config.setLogLevel(1);
+         //config.setLogFilePath("/sdcard/test.log");
+@@ -140,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
+             } catch (InterruptedException e) {
+                 e.printStackTrace();
+             }
++
+             //String downloadUrl = "http://148.153.132.174:30100/5MB.txt";
+             String downloadUrl = "https://tsp-test.dev.yeego.com/prod/api/system/download?key=tsp/guard_file/20210629/TESTCAR0039328896-20210629181255.mp4";
+             OkhttpUtil.get(fpaOkhttpPlugIn).download(this.url, this.mode,this.download_file_path, this.isStaging,new OkhttpUtil.OnDownloadListener() {
+@@ -192,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
+         tvInfo.setText("");
+         int count = 1;
+         for (int i=0;i<count;i++) {
+-            new Thread(new UploadThread(upload_http_url,false,mode,"/sdcard/15songs.mp4",i)).start();
++            new Thread(new UploadThread(upload_http_url,false,mode,"/sdcard/1KB.txt",i)).start();
+         }
+         // new Thread(new HttpConnectionTest()).start();
+     }
+diff --git a/demo/Android/app/src/main/java/io/agora/example/fpaDemo/OkhttpUtil.java b/demo/Android/app/src/main/java/io/agora/example/fpaDemo/OkhttpUtil.java
+index 55e1f6b..2ffffcd 100644
+--- a/demo/Android/app/src/main/java/io/agora/example/fpaDemo/OkhttpUtil.java
++++ b/demo/Android/app/src/main/java/io/agora/example/fpaDemo/OkhttpUtil.java
+@@ -32,6 +32,7 @@ import okio.Source;
+ 
+ import static io.agora.fpaService.Constans.BASE_HOST;
+ import static java.net.Proxy.Type.HTTP;
++import static java.net.Proxy.Type.SOCKS;
+ 
+ public class OkhttpUtil implements FpaHttpServiceObserver {
+     private static OkhttpUtil okhttpUtil;
+@@ -169,7 +170,7 @@ public class OkhttpUtil implements FpaHttpServiceObserver {
+             int len = 0;
+             FileOutputStream fos = null;
+             // 储存下载文件的目录
+-            String savePath = isExistDir(this.saveDir);
++            //String savePath = isExistDir(this.saveDir);
+             try {
+                 is = response.body().byteStream();
+                 long total = response.body().contentLength();
+diff --git a/demo/Android/settings.gradle b/demo/Android/settings.gradle
+index 1251602..aee8110 100644
+--- a/demo/Android/settings.gradle
++++ b/demo/Android/settings.gradle
+@@ -1,4 +1,4 @@
+ include ':app'
+ rootProject.name = "FpaDemo"
+-//include ':proj_android'
+-//project(':proj_android').projectDir = new File(settingsDir, '../../sys/android/fpa/java/app')
+\ No newline at end of file
++include ':proj_android'
++project(':proj_android').projectDir = new File(settingsDir, '../../sys/android/fpa/java/app')
+\ No newline at end of file
+diff --git a/src/HttpConnection.cpp b/src/HttpConnection.cpp
+index 6ad4d1a..0c9d090 100644
+--- a/src/HttpConnection.cpp
++++ b/src/HttpConnection.cpp
+@@ -171,27 +171,70 @@ int HttpConnection::GetChainIdFormTable(std::string hostPort) {
+     return chain_id;
+ }
+ 
++void HttpConnection::origianl_remote__socket_event_cb(struct bufferevent *bev, short events, void *arg) {
++    HttpConnection *connection = (HttpConnection*)arg;
++    if (events & BEV_EVENT_CONNECTED) {
++        connection->remote_server_fd_ = bufferevent_getfd(bev);
++        XLOGD("client %llu BEV_EVENT_CONNECTED %d",connection->connection_flag_,connection->remote_server_fd_);
++    } else if (events & BEV_EVENT_ERROR) {
++        /* An error occured while connecting. */
++    }
++}
++
++
++static  std::string PATTERN_IP = "(\\d*\\.){3}\\d*";
+ int HttpConnection::InitRemoteServerSocket(Request request) {
+     int chain_id = GetChainIdFromRequest(request);
+     // XLOGD("chain_id: %d", chain_id);
+-    int remote_server_fd = InitFpaSocket(chain_id);
+-    if(remote_server_fd <=0) {
+-        XLOGE("client:%llu,InitRemoteServerSocket failed for remote_server_fd: %d", connection_flag_, remote_server_fd);
+-        return -agora::ERR_FAILED;
+-    }
+-    XLOGD("client:%llu,chain_id: %d remote_server_fd:%d", connection_flag_, chain_id, remote_server_fd);
+-    //remote server alloc a new bufferevent
+-    struct bufferevent *bev_remote_server_socket = bufferevent_socket_new(
+-            connection_event_base_, remote_server_fd, BEV_OPT_CLOSE_ON_FREE);
+-    if(!bev_remote_server_socket) {
+-        XLOGE("client:%llu,InitRemoteServerSocket failed for bev_remote_server_socket is null: %p", connection_flag_, bev_remote_server_socket);
+-        return -agora::ERR_FAILED;
++    if (chain_id == -agora::ERR_NO_PERMISSION) {
++        EdUrlParser* url;
++        url = EdUrlParser::parseUrl(request.target.c_str());
++        XLOGD("client:%llu,GetHostWithPort fragment:%s path:%s host+port :%s:%s\n",
++              connection_flag_, url->fragment.c_str(), url->path.c_str(), url->hostName.c_str(), url->port.c_str());
++        if (url->port.empty()) {
++            url->port = "80";
++        }
++        std::regex r(PATTERN_IP);
++        bool flag = regex_match(url->hostName,r);
++        if(flag) {
++            struct sockaddr_in sin;
++
++            memset(&sin, 0, sizeof(sin));
++            sin.sin_family = AF_INET;
++            sin.sin_addr.s_addr = inet_addr(url->hostName.c_str());
++            sin.sin_port = htons(std::atoi(url->port.c_str())); /* Port 8080 */
++
++            struct bufferevent *bev_remote_server_socket  = bufferevent_socket_new(connection_event_base_, -1, BEV_OPT_CLOSE_ON_FREE);
++
++            bufferevent_setcb(bev_remote_server_socket, remote_server_socket_read_cb, nullptr, origianl_remote__socket_event_cb, this);
++            bev_remote_server_socket_ = bev_remote_server_socket;
++            if (bufferevent_socket_connect(bev_remote_server_socket,
++                                           (struct sockaddr *)&sin, sizeof(sin)) < 0) {
++                bufferevent_free(bev_remote_server_socket);
++                return -1;
++            }
++        }
++
++    } else {
++        int remote_server_fd = InitFpaSocket(chain_id);
++        if(remote_server_fd <=0) {
++            XLOGE("client:%llu,InitRemoteServerSocket failed for remote_server_fd: %d", connection_flag_, remote_server_fd);
++            return -agora::ERR_FAILED;
++        }
++        XLOGD("client:%llu,chain_id: %d remote_server_fd:%d", connection_flag_, chain_id, remote_server_fd);
++        //remote server alloc a new bufferevent
++        struct bufferevent *bev_remote_server_socket = bufferevent_socket_new(
++                connection_event_base_, remote_server_fd, BEV_OPT_CLOSE_ON_FREE);
++        if(!bev_remote_server_socket) {
++            XLOGE("client:%llu,InitRemoteServerSocket failed for bev_remote_server_socket is null: %p", connection_flag_, bev_remote_server_socket);
++            return -agora::ERR_FAILED;
++        }
++        remote_server_fd_ = remote_server_fd;
++        bev_remote_server_socket_ = bev_remote_server_socket;
++        bufferevent_setcb(bev_remote_server_socket, remote_server_socket_read_cb, nullptr,
++                          remote_server_socket_event_cb, this);
++        bufferevent_enable(bev_remote_server_socket, EV_READ | EV_WRITE);
+     }
+-    remote_server_fd_ = remote_server_fd;
+-    bev_remote_server_socket_ = bev_remote_server_socket;
+-    bufferevent_setcb(bev_remote_server_socket, remote_server_socket_read_cb, nullptr,
+-                      remote_server_socket_event_cb, this);
+-    bufferevent_enable(bev_remote_server_socket, EV_READ | EV_WRITE);
+     return agora::ERR_OK;
+ }
+ 
+@@ -225,7 +268,7 @@ void HttpConnection::client_socket_read_cb(struct bufferevent *bev, void *arg)
+ {
+     HttpConnection *connection = (HttpConnection*)arg;
+     size_t len = bufferevent_read(bev, connection->client_read_buffer_ + connection->client_read_buffer_len_, MAX_BUF_SIZE - connection->client_read_buffer_len_);
+-    // XLOGD("client:%llu,client_socket read origin len:%d\n data:%s",connection->connection_flag_,len,connection->client_read_buffer+connection->m_client_read_buffer_len);
++    XLOGD("client:%llu,client_socket read origin len:%d\n data:%s",connection->connection_flag_,len,connection->client_read_buffer_+connection->client_read_buffer_len_);
+     if (connection->current_status_ == CONNECTION_ESTABLISHED) {
+         std::string head_string;
+         if (!HasHttpHead(connection->client_read_buffer_, head_string)) {
+diff --git a/src/HttpConnection.h b/src/HttpConnection.h
+index 7ccd1af..3db37e1 100644
+--- a/src/HttpConnection.h
++++ b/src/HttpConnection.h
+@@ -9,6 +9,7 @@
+ #include <unistd.h>
+ #include <thread>
+ #include <sys/time.h>
++#include <regex>
+ #include <string>
+ #include "EdUrlParser.h"
+ #include "low_level_api/AgoraBase.h"
+@@ -58,6 +59,8 @@ private:
+ 
+     static void remote_server_socket_read_cb(struct bufferevent *bev, void *arg);
+     static void remote_server_socket_event_cb(struct bufferevent *bev, short events, void *arg);
++
++    static void origianl_remote__socket_event_cb(struct bufferevent *bev, short events, void *ptr);
+ private:
+     ConnectionStatus current_status_;
+     int remote_server_fd_;
