@@ -33,7 +33,7 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  pod 'AgoraFPA', :path => File.join('.symlinks', 'plugins', 'agora_fpa_service', 'ios')
+  pod 'AgoraFpaWrapper', :path => File.join('.symlinks', 'plugins', 'agora_fpa_service', 'ios')
 end
 
 post_install do |installer|

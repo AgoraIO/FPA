@@ -64,7 +64,7 @@ flutter {
 }
 
 dependencies {
-    implementation project(':proj_android')
+//    implementation project(':proj_android')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "com.google.android.material:material:1.3.0"

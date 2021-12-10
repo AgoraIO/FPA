@@ -1,6 +1,8 @@
 package io.agora.fpaService.agora_fpa_service
 
 import androidx.annotation.NonNull
+import io.agora.fpa.proxy.FpaProxyService
+import io.flutter.FlutterInjector.instance
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -17,6 +19,7 @@ class AgoraFpaServicePlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var channel : MethodChannel
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "agora_fpa_service")
     channel.setMethodCallHandler(this)
   }

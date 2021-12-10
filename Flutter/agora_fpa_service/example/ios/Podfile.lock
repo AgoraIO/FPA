@@ -1,7 +1,7 @@
 PODS:
   - agora_fpa_service (0.0.1):
     - Flutter
-  - AgoraFPA (3.3.1)
+  - AgoraFpaWrapper (3.3.1)
   - Flutter (1.0.0)
   - path_provider (0.0.1):
     - Flutter
@@ -10,7 +10,7 @@ PODS:
 
 DEPENDENCIES:
   - agora_fpa_service (from `.symlinks/plugins/agora_fpa_service/ios`)
-  - AgoraFPA (from `.symlinks/plugins/agora_fpa_service/ios`)
+  - AgoraFpaWrapper (from `.symlinks/plugins/agora_fpa_service/ios`)
   - Flutter (from `Flutter`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
@@ -18,7 +18,7 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   agora_fpa_service:
     :path: ".symlinks/plugins/agora_fpa_service/ios"
-  AgoraFPA:
+  AgoraFpaWrapper:
     :path: ".symlinks/plugins/agora_fpa_service/ios"
   Flutter:
     :path: Flutter
@@ -29,11 +29,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   agora_fpa_service: 9086913f5207ba927ab5a5d7a95b29c050998f73
-  AgoraFPA: ce8d8f0ad210171e18cd6f1300b8fb4aee3bfe1d
+  AgoraFpaWrapper: b5c1925c7cae0d0ef75017cd9ef0a4cc44871951
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
 
-PODFILE CHECKSUM: 8a8853e8ac042dbc3c3040e6f6806f2d7e8704e4
+PODFILE CHECKSUM: d4d98d66ec3b4daa5685829ee7c2b5d44bd46ca1
 
 COCOAPODS: 1.11.2

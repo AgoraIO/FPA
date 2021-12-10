@@ -1,7 +1,6 @@
 include ':app'
 
-include ':proj_android'
-project(':proj_android').projectDir = new File(settingsDir, '../../../../../fpa_service/sys/android/fpa/java/app')
+//include ':proj_andrprojectDir = new File(settingsDir, '../../../../../fpa_service/platform/android/project/libfpa/')
 
 def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
 def properties = new Properties()
