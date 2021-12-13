@@ -69,7 +69,12 @@ class _MyAppState extends State<MyApp> implements FpaProxyServiceObserver {
       logLevel: FpaProxyServiceLogLevel.error,
       logFilePath: _logFilePath,
     );
-    FpaProxyService.instance.start(fpaConfig);
+    try {
+      FpaProxyService.instance.start(fpaConfig);
+    } on FpaProxyServiceException catch (e) {
+      _logSink.sink('start', 'with exception: ${e.toString()}');
+      return;
+    }
 
     FpaHttpProxyChainConfig chainConfig = FpaHttpProxyChainConfig(
       chainArray: [

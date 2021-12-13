@@ -23,6 +23,7 @@ abstract class FpaProxyService {
 
   static FpaProxyService get instance => FpaProxyServiceImpl.instance;
 
+  /// Will throw [FpaProxyServiceException] if not success.
   void start(FpaProxyServiceConfig config);
 
   void stop();

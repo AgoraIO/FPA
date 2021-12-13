@@ -5,7 +5,7 @@ set -e
 ROOT_PATH=$(pwd)
 IRIS_PROJECT_PATH=../../../iris
 
-BUILD_TYPE="Debug"
+BUILD_TYPE="Release"
 ARCHI_TYPE="OS64COMBINED"
 
 bash $IRIS_PROJECT_PATH/fpa/ci/build-ios-flutter.sh

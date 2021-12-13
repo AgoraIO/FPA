@@ -19,42 +19,27 @@ import 'native_iris_fpa_bindings.dart';
 const int kBasicResultLength = 512;
 
 class FpaProxyServiceImpl implements FpaProxyService {
-  /// Constructor for testing purpose
-  // @visibleForTesting
-  // FpaProxyService.mock(NativeFpaService nativeAgoraFpaService) {
-  //   _nativeFpaService = nativeAgoraFpaService;
-  // }
-
   static DynamicLibrary _loadAgoraFpaServiceLib() {
-    // DynamicLibrary.open("libagora_fpa_sdk.so");
-    // DynamicLibrary.open("libagora_fpa_service.so");
     return Platform.isAndroid
         ? DynamicLibrary.open("libAgoraFpaWrapper.so")
         : DynamicLibrary.process();
   }
 
   FpaProxyServiceImpl._() {
-    // _nativeFpaService = NativeFpaService();
     _binding = NativeIrisFpaBinding(_loadAgoraFpaServiceLib());
   }
 
   static const String kLocalHost = '127.0.0.1';
 
   static FpaProxyServiceImpl get instance => _instance;
-  static FpaProxyServiceImpl _instance = FpaProxyServiceImpl._();
+  static final FpaProxyServiceImpl _instance = FpaProxyServiceImpl._();
 
-  // late final NativeFpaService _nativeFpaService;
   late final NativeIrisFpaBinding _binding;
   ffi.Pointer<ffi.Void>? _irisFpaPtr;
   ffi.Pointer<ffi.Void>? _irisEventHandlerPtr;
   FpaProxyServiceObserver? _fpaObserver;
   ReceivePort? _dartNativeReceivePort;
   int _dartNativePort = -1;
-
-  // factory FpaProxyService.create() {
-  //   _instance ??= FpaProxyService._();
-  //   return _instance!;
-  // }
 
   void _checkReturnCode(int ret) {
     if (ret < 0) {
@@ -80,22 +65,9 @@ class FpaProxyServiceImpl implements FpaProxyService {
         ffi.nullptr,
       );
 
-      // final ffi.Pointer<
-      //         ffi.NativeFunction<
-      //             ffi.Void Function(
-      //                 ffi.Pointer<ffi.Int8>, ffi.Pointer<ffi.Int8>)>> eventPtr =
-      //     ffi.Pointer.fromFunction(_onProxyEventHandle);
-
       _dartNativeReceivePort = ReceivePort()..listen(_onProxyEventHandle);
       _dartNativePort = _dartNativeReceivePort!.sendPort.nativePort;
 
-      // final dartNativePortPtr = Int64Pointer()..value = _dartNativePort;
-
-      // Pointer<ffi.Int64> dp = calloc.allocate(ffi.sizeOf<ffi.Int64>());
-      // dp.value = _dartNativePort;
-      debugPrint('_dartNativePort: $_dartNativePort');
-
-      // final observerPtr = calloc<IrisCEventHandler>()..ref.OnEvent = eventPtr;
       _irisEventHandlerPtr = _binding.SetIrisFpaProxyServiceEventHandlerFlutter(
           _irisFpaPtr!, ffi.NativeApi.initializeApiDLData, _dartNativePort);
 
@@ -124,7 +96,7 @@ class FpaProxyServiceImpl implements FpaProxyService {
       );
       _checkReturnCode(ret);
     } catch (e) {
-      rethrow;
+      debugPrint('[FpaProxyService] stop() with error ${e.toString()} ');
     } finally {
       _irisFpaPtr = null;
       _irisEventHandlerPtr = null;
@@ -134,42 +106,12 @@ class FpaProxyServiceImpl implements FpaProxyService {
     }
   }
 
-//   static void _onProxyEventHandle(
-//       ffi.Pointer<ffi.Int8> eventN, ffi.Pointer<ffi.Int8> resN) {
-//     final event = eventN.cast<Utf8>().toDartString();
-// debugPrint('event: $event');
-//     if (event == 'onProxyEvent') {
-//       final res = resN.cast<Utf8>().toDartString();
-//       // final resMap = Map.from(jsonDecode(res));
-//       // final eventCode = resMap['event'] as String;
-//       // final connectionInfo = resMap['connection_info'];
-//       // final err = resMap['err'];
-//       final proxyEvent = ProxyEvent.fromJson(jsonDecode(res));
-//       _instance._fpaObserver?.onProxyEvent(
-//         proxyEvent.event,
-//         proxyEvent.connectionInfo,
-//         proxyEvent.errorCode,
-//       );
-//     }
-//   }
-
   static void _onProxyEventHandle(dynamic data) {
-    debugPrint('_onProxyEventHandle data: $data');
-    // final event = eventN.cast<Utf8>().toDartString();
-    // debugPrint('event: $event');
     final dataList = List.from(data);
     final event = dataList[0];
     if (event == 'onProxyEvent') {
-      // final res = resN.cast<Utf8>().toDartString();
       final res = dataList[1] as String;
 
-      debugPrint('res: $res');
-
-      '{"event":0,"connection_info":{"dst_ip_or_domain":"frank-web-demo.rtns.sd-rtn.com","connection_id":"CB97AA96B2764A7D830CBB9AB1A40948","proxy_type":"https","dst_port":30113,"local_port":41663},"err":0}';
-      // final resMap = Map.from(jsonDecode(res));
-      // final eventCode = resMap['event'] as String;
-      // final connectionInfo = resMap['connection_info'];
-      // final err = resMap['err'];
       final proxyEvent = ProxyEvent.fromJson(jsonDecode(res));
       _instance._fpaObserver?.onProxyEvent(
         proxyEvent.event,
@@ -198,8 +140,10 @@ class FpaProxyServiceImpl implements FpaProxyService {
 
       _checkReturnCode(ret);
 
-      return int.tryParse(result.cast<Utf8>().toDartString()) ?? 0;
+      return int.parse(result.cast<Utf8>().toDartString());
     } catch (e) {
+      debugPrint(
+          '[FpaProxyService] getHttpProxyPort() with error ${e.toString()}');
       return FpaProxyServiceErrorCode.badPort;
     } finally {
       calloc.free(result);
@@ -225,7 +169,9 @@ class FpaProxyServiceImpl implements FpaProxyService {
 
       return int.tryParse(result.cast<Utf8>().toDartString()) ?? 0;
     } catch (e) {
-      rethrow;
+      debugPrint(
+          '[FpaProxyService] getTransparentProxyPort() with error ${e.toString()}');
+      return FpaProxyServiceErrorCode.badPort;
     } finally {
       calloc.free(param);
       calloc.free(result);
@@ -248,7 +194,8 @@ class FpaProxyServiceImpl implements FpaProxyService {
       );
       _checkReturnCode(ret);
     } catch (e) {
-      rethrow;
+      debugPrint(
+          '[FpaProxyService] setParameters() with error ${e.toString()}');
     } finally {
       calloc.free(pN);
     }
@@ -268,7 +215,8 @@ class FpaProxyServiceImpl implements FpaProxyService {
 
       _checkReturnCode(ret);
     } catch (e) {
-      rethrow;
+      debugPrint(
+          '[FpaProxyService] setOrUpdateHttpProxyChainConfig() with error ${e.toString()} ');
     } finally {
       calloc.free(pN);
     }
@@ -294,7 +242,9 @@ class FpaProxyServiceImpl implements FpaProxyService {
 
       return info;
     } catch (e) {
-      rethrow;
+      debugPrint(
+          '[FpaProxyService] getDiagnosisInfo() with error ${e.toString()} ');
+      return FpaProxyServiceDiagnosisInfo(installId: '', instanceId: '');
     } finally {
       calloc.free(result);
     }
@@ -317,7 +267,9 @@ class FpaProxyServiceImpl implements FpaProxyService {
 
       return result.cast<Utf8>().toDartString();
     } catch (e) {
-      return 'unknow';
+      debugPrint(
+          '[FpaProxyService] getSDKVersion() with error ${e.toString()} ');
+      return '';
     } finally {
       calloc.free(result);
     }
@@ -340,7 +292,9 @@ class FpaProxyServiceImpl implements FpaProxyService {
 
       return result.cast<Utf8>().toDartString();
     } catch (e) {
-      return 'unknow';
+      debugPrint(
+          '[FpaProxyService] getBuildInfo() with error ${e.toString()} ');
+      return '';
     } finally {
       calloc.free(result);
     }

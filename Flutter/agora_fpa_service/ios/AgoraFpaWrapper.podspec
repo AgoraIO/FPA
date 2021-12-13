@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
     s.license          = { :file => '../LICENSE' }
     s.author           = { 'Agora' => 'developer@agora.io' }
     s.source           = { :path => '.' }
-    # s.dependency 'AgoraRtcEngine_macOS', '3.4.6'
-    # s.vendored_frameworks = 'AgoraFpaWrapper.framework', 'AgoraFPA.framework', 'AgoraFPAService.framework'
-    s.vendored_frameworks = 'AgoraFPA.framework', 'AgoraFpaProxyService.framework', 'AgoraFpaWrapper.framework'
+    # s.dependency 'AgoraFPA_iOS', '0.1.12.0'
+    s.vendored_frameworks = 'AgoraFpaWrapper.framework', 'AgoraFPA.framework', 'AgoraFpaProxyService.framework'
+    # s.vendored_frameworks = 'AgoraFpaWrapper.framework'
 end

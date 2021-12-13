@@ -18,6 +18,8 @@ fi
 
 echo "Copying $IRIS_PROJECT_PATH/build/android/arm64-v8a/output/fpa/include/ to $ROOT_PATH/third_party/include/"
 cp -r "$IRIS_PROJECT_PATH/build/android/arm64-v8a/output/fpa/include/" "$ROOT_PATH/third_party/include/"
+#/Users/fenglang/codes/aw/iris/third_party/agora/fpa/libs/so_jar/AgoraFpaService.jar
+cp -r "$IRIS_PROJECT_PATH/third_party/agora/fpa/libs/so_jar/AgoraFpaService.jar" "$ROOT_PATH/android/libs/" 
 
 for ABI in ${ABIS};
 do
