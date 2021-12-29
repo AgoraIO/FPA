@@ -6,6 +6,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://www.jitpack.io' }
     }
 
     dependencies {
@@ -18,6 +19,7 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://www.jitpack.io' }
     }
 }
 
@@ -38,15 +40,14 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
-        main.jniLibs.srcDirs += 'libs'
     }
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 18
     }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation files('libs/AgoraFpaService.jar')
+    implementation "com.github.agorabuilder:iris-fpa:0.1.14.0"
 }

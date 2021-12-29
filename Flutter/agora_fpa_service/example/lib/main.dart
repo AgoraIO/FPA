@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> implements FpaProxyServiceObserver {
   bool _uploadHttpEnabled = false;
 
   bool _enableFpa = true;
-  late int _fpaPort;
+
   int _downloadUploadTimes = 1;
   bool _isEditDownloadUploadTimes = false;
 
@@ -131,12 +131,11 @@ class _MyAppState extends State<MyApp> implements FpaProxyServiceObserver {
 
   void _resetFpa(bool enable) {
     if (enable) {
-      _fpaPort = FpaProxyService.instance.getHttpProxyPort();
       (_dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
           (client) {
         // config the http client
         client.findProxy = (uri) {
-          return 'PROXY ${FpaProxyService.kLocalHost}:$_fpaPort';
+          return 'PROXY ${FpaProxyService.kLocalHost}:${FpaProxyService.instance.getHttpProxyPort()}';
         };
       };
     } else {
@@ -272,7 +271,7 @@ class _MyAppState extends State<MyApp> implements FpaProxyServiceObserver {
                   children: [
                     SwitchListTile(
                         title: Text(
-                          'Enable FPA${_enableFpa ? ' (fpa port: $_fpaPort)' : ''}',
+                          'Enable FPA${_enableFpa ? ' (fpa port: ${FpaProxyService.instance.getHttpProxyPort()})' : ''}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         value: _enableFpa,
